@@ -1,16 +1,13 @@
 using UnityEngine;
 using Photon.Pun;
-using UnityEngine.UI;
-
 
 public class PlayerController : MonoBehaviour,IPunObservable
 {
+    [SerializeField] private Color[] colors;
     private PhotonView _photonView;
     private MeshRenderer _meshRender;  
-    private int _changeColor = 0;
-    [SerializeField] private Color [] colors;
-    private Quaternion _quaternion;   
-                
+    private int _changeColor = 0;      
+
     private void Start()
     {
         _photonView = GetComponent<PhotonView>();
@@ -21,25 +18,24 @@ public class PlayerController : MonoBehaviour,IPunObservable
         if(stream.IsWriting)
         {
             stream.SendNext(_changeColor);
-            stream.SendNext(_quaternion);                                
+            stream.SendNext(transform.rotation);                                
         }
         else
         {
             _changeColor = (int) stream.ReceiveNext();                   
-             SyncColor();                                                  
-            _quaternion = (Quaternion)stream.ReceiveNext();          
+             SyncColor();
+            transform.rotation = (Quaternion)stream.ReceiveNext();          
         }
     }
   
     public void Update()
     {        
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            transform.Rotate(0f,5f,0f);
-        }
         if (_photonView.IsMine)
         {
-            _quaternion = transform.rotation;         
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                transform.Rotate(0f, 5f, 0f);
+            }
 
             if (Input.GetKey(KeyCode.LeftArrow))
             {
@@ -60,16 +56,10 @@ public class PlayerController : MonoBehaviour,IPunObservable
                 }              
                 SyncColor();           
             }         
-        }
-        if (!_photonView.IsMine)
-        {
-            transform.rotation = _quaternion;
-        }            
+        }          
     }
-
     private void SyncColor()
     {
-        _meshRender.material.color = colors[_changeColor];
-        
+        _meshRender.material.color = colors[_changeColor];        
     }
 }

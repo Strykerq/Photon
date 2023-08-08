@@ -2,15 +2,13 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 
-public class LobbyManager : MonoBehaviourPunCallbacks
+public class LobbyConnection : MonoBehaviourPunCallbacks
 {
-    public Text LogText;
-    [SerializeField] private InputField _roomName;
-    [SerializeField] private InputField _passwordInput;
+    public Text LogText;   
     private string _roomPassword = "1234";
     private string _enteredPassword;
-    Photon.Realtime.RoomOptions roomOptions;
-    
+    [SerializeField] private InputField _roomName;
+    [SerializeField] private InputField _passwordInput;
 
     private void Start()
     {      
@@ -33,11 +31,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
         string roomName = "room";
-        PhotonNetwork.CreateRoom("room", roomOptions);
-        {
-            //roomOptions.IsOpen = true;
-            //roomOptions.IsVisible = false;                               
-        }
+        PhotonNetwork.CreateRoom("room", new Photon.Realtime.RoomOptions());
+        
         Log(roomName);
     }
 
